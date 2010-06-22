@@ -16,45 +16,44 @@ Usage:
 where [options] are:
 EOS
 
-  opt :output, "output file. If not set, output goes to clipboard (OSX only)", :default => false, :short => "-o"
+  opt :output, "output file. If not set, output goes to clipboard (OSX only)", :default => "", :short => "-o"
   opt :include, "include bookmarklet code on top of input file as a comment", :default => false, :short => "-i"
   opt :minimize, "minimize javascript code", :default => false, :short => "-m"
   opt :jslint, "analyse javascript code via jslint before", :default => false, :short => "-l"
   opt :publish, "build html page for bookmarklet and open it in a browser.", :default => false
   opt :warn, "warn if bookmarklet code exceeds allowed maximum bookmark size", :default => true
   opt :externalize, "externalize code and host it on github.com as a gist. Bookmarklet will load and execute code. This is useful for long scripts in particular.", :default => false
-  
-  Trollop::die "need at least a javascript file as input!" if ARGV.empty?
-end
+end 
 
-p opts
+Trollop::die "need at least a javascript file as input" if ARGV.empty?
 
 input_file = ARGV.to_s
-if File.exists?(input_file)
-  
-  # read javascript file
-  input = File.read(input_file)
 
-  # build bookmarklet code
-  bookmarklet = Marlene.to_bookmarklet(input)
+# die if file dows not exist
+Trollop::die "#{input_file} must exist" unless File.exist?(input_file) if input_file
 
-  # write bookmarklet code to a file "bookmarklet.js"
-  if opts[:output]
-    File.open("bookmarklet.js", "w").write(bookmarklet)
-  end
-  
-  # include bookmarklet code as comment on top of input file
-  if opts[:include]
-    
-    # remove first line if there's already a bookmarklet comment and 
-    input.gsub!(/^\/\/ javascript:.+\n\n/, '')
+# read javascript file
+input = File.read(input_file)
 
-    File.open(input_file, "w") do |f|      
-      f.puts "// #{bookmarklet}\n\n#{input}"
-    end
-  end
-     
-  # copy bookmarklet code to clipboard
-  p bookmarklet
-  
+# build bookmarklet code
+bookmarklet = Marlene.to_bookmarklet(input)
+
+# write bookmarklet code to a file "bookmarklet.js"
+if opts[:output] != ""
+  File.open(opts[:output], "w").write(bookmarklet)
 end
+
+# include bookmarklet code as comment on top of input file
+if opts[:include]
+  
+  # remove first line if there's already a bookmarklet comment and 
+  input.gsub!(/^\/\/ javascript:.+\n\n/, '')
+
+  File.open(input_file, "w") do |f|      
+    f.puts "// #{bookmarklet}\n\n#{input}"
+  end
+end
+   
+# copy bookmarklet code to clipboard
+p bookmarklet
+
