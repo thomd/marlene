@@ -54,6 +54,6 @@ if opts[:include]
   end
 end
    
-# copy bookmarklet code to clipboard
-p bookmarklet
+# copy bookmarklet code to clipboard (OSX only)
+IO.popen('pbcopy', 'w').puts bookmarklet
 
