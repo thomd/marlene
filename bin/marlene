@@ -34,13 +34,10 @@ if File.exists?(input_file)
   
   # read javascript file
   input = File.read(input_file)
-  
-  # remove first line if there's already a bookmarklet comment
-#  input.sub!(/^\/\/ javascript:.+?\n/, '')
-  
+
   # build bookmarklet code
   bookmarklet = Marlene.to_bookmarklet(input)
-  
+
   # write bookmarklet code to a file "bookmarklet.js"
   if opts[:output]
     File.open("bookmarklet.js", "w").write(bookmarklet)
@@ -48,8 +45,12 @@ if File.exists?(input_file)
   
   # include bookmarklet code as comment on top of input file
   if opts[:include]
-    File.open(input_file, "a") do |f|      
-      f.puts "//#{bookmarklet}\n\n"
+    
+    # remove first line if there's already a bookmarklet comment and 
+    input.gsub!(/^\/\/ javascript:.+\n\n/, '')
+
+    File.open(input_file, "w") do |f|      
+      f.puts "// #{bookmarklet}\n\n#{input}"
     end
   end
      
