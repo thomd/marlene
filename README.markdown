@@ -5,9 +5,12 @@ Marlene is inspired by John Grubers Perl based [JavaScript Bookmarklet Builder](
 
 
 
-Unit Test
----------
+Specs
+-----
 
-run unit test with
+run specs with
 
-    ruby test/test_marlene.rb
+    spec spec/marlene_spec.rb --format specdoc
+or
+
+    autospec
