@@ -21,15 +21,15 @@ EOS
   opt :minimize, "minimize javascript code", :default => false, :short => "-m"
   opt :jslint, "analyse javascript code via jslint before", :default => false, :short => "-l"
   opt :publish, "build html page for bookmarklet and open it in a browser.", :default => false
-  opt :warn, "warn if bookmarklet code exceeds allowed maximum bookmark size", :default => true
-  opt :externalize, "externalize code and host it on github.com as a gist. Bookmarklet will load and execute code. This is useful for long scripts in particular.", :default => false
+#  opt :warn, "warn if bookmarklet code exceeds allowed maximum bookmark size", :default => true
+#  opt :externalize, "externalize code and host it on github.com as a gist. Bookmarklet will load and execute code. This is useful for long scripts in particular.", :default => false
 end 
 
 Trollop::die "need at least a javascript file as input" if ARGV.empty?
 
 input_file = ARGV.to_s
 
-# die if file dows not exist
+# die if file does not exist
 Trollop::die "#{input_file} must exist" unless File.exist?(input_file) if input_file
 
 # read javascript file
