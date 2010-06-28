@@ -1,0 +1,1 @@
+javascript:(function(){var%20script%20=%20document.createElement('script');script.type%20=%20'text/javascript';script.src%20=%20'http://example.com/this/is/a/remote/javascript.js?'%20+%20(new%20Date().getTime());document.getElementsByTagName('body')[0].appendChild(script);})()

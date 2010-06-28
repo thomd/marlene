@@ -2,18 +2,21 @@
 
 require 'rubygems'
 require 'trollop'
+require 'uri'
+require 'net/http'
 require File.dirname(__FILE__) + '/../lib/marlene.rb'
 
 opts = Trollop::options do
   version "Marlene 0.1 (c) 2010 Thomas Duerr"
   banner <<-EOS
-Marlene builds code for bookmarklets from a regular javascript input file.
+Marlene builds code for bookmarklets from a local or from a remote hoted javascript file.
 
 Usage:
-       marlene [options] <input.js>
+       marlene [options] <input>
        
+where <input> is a file path or an URI to a javascript file.
        
-where [options] are:
+[options] are:
 EOS
 
   opt :output, "output file. If not set, output goes to clipboard (OSX only)", :default => "", :short => "-o"
@@ -25,35 +28,67 @@ EOS
 #  opt :externalize, "externalize code and host it on github.com as a gist. Bookmarklet will load and execute code. This is useful for long scripts in particular.", :default => false
 end 
 
-Trollop::die "need at least a javascript file as input" if ARGV.empty?
+Trollop::die "need at least a javascript file-path or a valid URI as input" if ARGV.empty?
 
-input_file = ARGV.to_s
+input = ARGV.to_s
 
-# die if file does not exist
-Trollop::die "#{input_file} must exist" unless File.exist?(input_file) if input_file
+uri = URI.extract(input, 'http')[0]
+if uri.nil? then
 
-# read javascript file
-input = File.read(input_file)
+  #
+  # ===== local javascript ==========
+  #
 
-# build bookmarklet code
-bookmarklet = Marlene.to_bookmarklet(input)
+  # stop if file does not exist
+  Trollop::die "#{input} must exist" unless File.exist?(input) if input
+
+  # read javascript file
+  local_file = File.read(input)
+
+  # build bookmarklet code
+  bookmarklet = Marlene.to_bookmarklet(local_file)
+
+  # include bookmarklet code as comment on top of input file
+  if opts[:include]
+  
+    # remove first line if there's already a bookmarklet comment and 
+    input.gsub!(/^\/\/ javascript:.+\n\n/, '')
+
+    File.open(input, "w") do |f|      
+      f.puts "// #{bookmarklet}\n\n#{input}"
+    end
+  end
+   
+else 
+  
+  #
+  # ===== remote javascript ==========
+  #
+  
+  # stop if URIs HTTP status is not 200
+  def remote_file_exists?(url)
+    url = URI.parse(url)
+    Net::HTTP.start(url.host, url.port) do |http|
+      return http.head(url.request_uri).code == "200"
+    end
+  end  
+  Trollop::die "#{uri} must exist" unless remote_file_exists?(uri) if uri
+
+  # build bookmarklet code
+  bookmarklet = Marlene.to_remote_bookmarklet(uri)
+
+end
+
+
 
 # write bookmarklet code to a file "bookmarklet.js"
 if opts[:output] != ""
   File.open(opts[:output], "w").write(bookmarklet)
 end
-
-# include bookmarklet code as comment on top of input file
-if opts[:include]
   
-  # remove first line if there's already a bookmarklet comment and 
-  input.gsub!(/^\/\/ javascript:.+\n\n/, '')
-
-  File.open(input_file, "w") do |f|      
-    f.puts "// #{bookmarklet}\n\n#{input}"
-  end
-end
-   
 # copy bookmarklet code to clipboard (OSX only)
 IO.popen('pbcopy', 'w').puts bookmarklet
+
+# stdout
+puts bookmarklet
 

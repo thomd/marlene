@@ -11,6 +11,7 @@ Specs
 run specs with
 
     spec spec/marlene_spec.rb --format specdoc
+
 or
 
     autospec
