@@ -25,15 +25,32 @@ module Marlene
     'javascript:' + js                # prefix with 'javascript:'
   end
 
+  def Marlene.to_compressed_bookmarklet(input)
+    js = Marlene.compress(input)
+    Marlene.to_bookmarklet(js)
+  end
+  
   def Marlene.to_remote_bookmarklet(input)
-    js = Marlene::LOADER_SCRIPT.to_s.gsub(/\{\{script\}\}/, input.to_s)
+    js = Marlene.create_loader_script(input)
     Marlene.to_bookmarklet(js)
   end
 
+  def Marlene.to_compressed_remote_bookmarklet(input)
+    js = Marlene.create_loader_script(input)
+    js = Marlene.compress(js)
+    Marlene.to_bookmarklet(js)
+  end
+
+  # helper
+
   def Marlene.compress(input)
     require "yui/compressor"
-    compressor = YUI::JavaScriptCompressor.new
+    compressor = YUI::JavaScriptCompressor.new(:munge => true)
     compressor.compress(input)
+  end
+
+  def Marlene.create_loader_script(input)
+    Marlene::LOADER_SCRIPT.to_s.gsub(/\{\{script\}\}/, input.to_s)
   end
   
 end
