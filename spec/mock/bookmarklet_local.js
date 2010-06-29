@@ -1,1 +1,0 @@
-javascript:Array.prototype.contains%20=%20function(item){return%20this.indexOf(item)%20>%20-1;}alert([1,2,3,4,5].contains(4));

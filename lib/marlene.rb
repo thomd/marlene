@@ -30,4 +30,10 @@ module Marlene
     Marlene.to_bookmarklet(js)
   end
 
+  def Marlene.compress(input)
+    require "yui/compressor"
+    compressor = YUI::JavaScriptCompressor.new
+    compressor.compress(input)
+  end
+  
 end
