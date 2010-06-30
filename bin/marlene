@@ -21,7 +21,7 @@ EOS
 
   opt :output, "output file. If not set, output goes to clipboard (OSX only)", :default => "", :short => "-o"
   opt :include, "include bookmarklet code on top of input file as a comment", :default => false, :short => "-i"
-  opt :minimize, "minimize javascript code", :default => false, :short => "-m"
+#  opt :minimize, "minimize javascript code", :default => false, :short => "-m"
   opt :jslint, "analyse javascript code via jslint before", :default => false, :short => "-l"
   opt :publish, "build html page for bookmarklet and open it in a browser.", :default => false
 #  opt :warn, "warn if bookmarklet code exceeds allowed maximum bookmark size", :default => true
