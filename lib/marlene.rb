@@ -1,10 +1,11 @@
-require 'uri'
+require "uri"
+require "yui/compressor"
 
 module Marlene  
 
   ANCHOR_TEXTNODE = "I'm a bookmarklet"
-
-  LOADER_SCRIPT = "
+  PSEUDOCOL       = "javascript:"
+  LOADER_SCRIPT   = "
     (function(){
         var script = document.createElement('script');
         script.type = 'text/javascript';
@@ -12,45 +13,33 @@ module Marlene
         document.getElementsByTagName('body')[0].appendChild(script);
     })()
   "
-  
-  def Marlene.to_bookmarklet(input)
-    js = input.to_s
-    js = js.gsub(/^ +/, '')           # remove line-leading whitespace
-    js = js.gsub(/ +$/, '')           # remove line-ending whitespace
-    js = js.gsub(/\t/, ' ')           # replace tabs with spaces
-    js = js.gsub(/ +/, ' ')           # replace multiple spaces with a single space
-    js = js.gsub(/^ *\/\/.+\n/, '')   # remove comment lines starting with a double slash
-    js = js.gsub(/\n/, '')            # remove all newlines
-    js = URI.escape(js, ' ')          # URI escape spaces only
-    'javascript:' + js                # prefix with 'javascript:'
+
+  def yui_compressor
+    YUI::JavaScriptCompressor.new(:munge => true)
+  end
+end
+
+
+class String
+  include Marlene
+
+  def to_bookmarklet
+    js = self.to_s
+    js.gsub!(/^ +/, '')                # remove line-leading whitespace
+    js.gsub!(/ +$/, '')                # remove line-ending whitespace
+    js.gsub!(/\t/, ' ')                # replace tabs with spaces
+    js.gsub!(/ +/, ' ')                # replace multiple spaces with a single space
+    js.gsub!(/^ *\/\/.+\n/, '')        # remove comment lines starting with a double slash
+    js.gsub!(/\n/, '')                 # remove all newlines
+    js = URI.escape(js, ' ')           # URI escape spaces only
+    PSEUDOCOL + js                     # prefix with 'javascript:'
   end
 
-  def Marlene.to_compressed_bookmarklet(input)
-    js = Marlene.compress(input)
-    Marlene.to_bookmarklet(js)
-  end
-  
-  def Marlene.to_remote_bookmarklet(input)
-    js = Marlene.create_loader_script(input)
-    Marlene.to_bookmarklet(js)
+  def compress
+    yui_compressor.compress(self)      # use YUI compressor to minimize javascript code
   end
 
-  def Marlene.to_compressed_remote_bookmarklet(input)
-    js = Marlene.create_loader_script(input)
-    js = Marlene.compress(js)
-    Marlene.to_bookmarklet(js)
+  def to_loader_script
+    LOADER_SCRIPT.gsub(/\{\{script\}\}/, self)     # insert into loader script a javascript URL
   end
-
-  # helper
-
-  def Marlene.compress(input)
-    require "yui/compressor"
-    compressor = YUI::JavaScriptCompressor.new(:munge => true)
-    compressor.compress(input)
-  end
-
-  def Marlene.create_loader_script(input)
-    Marlene::LOADER_SCRIPT.to_s.gsub(/\{\{script\}\}/, input.to_s)
-  end
-  
 end

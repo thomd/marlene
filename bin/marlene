@@ -45,8 +45,8 @@ if uri.nil? then
   # read javascript file
   local_file = File.read(input)
 
-  # build bookmarklet code
-  bookmarklet = Marlene.to_bookmarklet(local_file)
+  # build bookmarklet
+  bookmarklet = local_file.compress.to_bookmarklet
 
   # include bookmarklet code as comment on top of input file
   if opts[:include]
@@ -74,8 +74,8 @@ else
   end  
   Trollop::die "#{uri} must exist" unless remote_file_exists?(uri) if uri
 
-  # build bookmarklet code
-  bookmarklet = Marlene.to_remote_bookmarklet(uri)
+  # build bookmarklet loadscript
+  bookmarklet = uri.to_loader_script.compress.to_bookmarklet
 
 end
 

@@ -1,6 +1,6 @@
 require "rubygems"
 require "spec"
-require File.dirname(__FILE__) + '/../lib/marlene'
+require File.dirname(__FILE__) + '/../lib/marlene.rb'
 
 describe "Marlene bookmark generator" do
 
@@ -8,34 +8,34 @@ describe "Marlene bookmark generator" do
     @remote_url = "http://example.com/this/is/a/remote/javascript.js"   
   end
 
-  it "should transform a local javascript file to an offline bookmarklet" do
+  it "should transform a local javascript file to a bookmarklet" do
     input  = javascript_local
     output = bookmarklet_local
-    Marlene.to_bookmarklet(input).should == output
+    input.to_bookmarklet.should == output
   end
   
-  it "should transform a remote javascript into an online bookmarklet" do
+  it "should transform an external javascript into a bookmarklet loaderscript" do
     input  = @remote_url
     output = bookmarklet_remote
-    Marlene.to_remote_bookmarklet(input).should == output
+    input.to_loader_script.to_bookmarklet.should == output
   end
 
-  it "should compress javascript code with YUI Compressor" do
+  it "should compress javascript code with a javascript compressor" do
     input  = javascript_local
     output = javascript_local_compressed
-    Marlene.compress(input).should == output
+    input.compress.should == output
   end
   
-  it "should transform a local javascript file to a compressed offline bookmarklet" do
+  it "should transform a local javascript file to a compressed bookmarklet" do
     input  = javascript_local
     output = bookmarklet_local_compressed
-    Marlene.to_compressed_bookmarklet(input).should == output
+    input.compress.to_bookmarklet.should == output
   end
   
-  it "should transform a remote javascript into a compressed online bookmarklet" do
+  it "should transform an external javascript into a compressed bookmarklet loaderscript" do
     input  = @remote_url
     output = bookmarklet_remote_compressed
-    Marlene.to_compressed_remote_bookmarklet(input).should == output
+    input.to_loader_script.compress.to_bookmarklet.should == output
   end
   
 #  it "should write a html page with a bookmarklet link" do
