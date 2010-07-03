@@ -38,8 +38,11 @@ describe "Marlene bookmark generator" do
     input.to_loader_script.compress.to_bookmarklet.should == output
   end
   
-#  it "should write a html page with a bookmarklet link" do
-#  end
+  it "should write a html page with a bookmarklet link" do
+    input  = javascript_local_compressed
+    output = html_page_compressed_bookmarklet
+    input.compress.to_bookmarklet.to_bookmarklet_page.should == output
+  end
 
 end
 
@@ -72,4 +75,17 @@ end
 
 def bookmarklet_remote_compressed
   "javascript:(function(){var%20a=document.createElement(\"script\");a.type=\"text/javascript\";a.src=\"http://example.com/this/is/a/remote/javascript.js?\"+(new%20Date().getTime());document.getElementsByTagName(\"body\")[0].appendChild(a)})();"
+end
+
+def html_page_compressed_bookmarklet
+  "<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset=\"utf-8\" />
+    <title>bookmarklet</title>
+  </head>
+  <body>
+    <a href=\"javascript:Array.prototype.contains=function(b){return%20this.indexOf(b)>-1};alert([1,2,3,4,5].contains(4));\">bookmarklet</a>  
+  </body>
+</html>"
 end

@@ -1,9 +1,10 @@
 require "uri"
 require "yui/compressor"
+require "mustache"
 
 module Marlene  
 
-  ANCHOR_TEXTNODE = "I'm a bookmarklet"
+  ANCHOR_TEXTNODE = "bookmarklet"
   PSEUDOCOL       = "javascript:"
   LOADER_SCRIPT   = "
     (function(){
@@ -13,6 +14,16 @@ module Marlene
         document.getElementsByTagName('body')[0].appendChild(script);
     })()
   "
+  HTML_OUTPUT     = "<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset=\"utf-8\" />
+    <title>"+ANCHOR_TEXTNODE+"</title>
+  </head>
+  <body>
+    <a href=\"{{bookmarklet}}\">"+ANCHOR_TEXTNODE+"</a>  
+  </body>
+</html>"
 
   def yui_compressor
     YUI::JavaScriptCompressor.new(:munge => true)
@@ -41,5 +52,9 @@ class String
 
   def to_loader_script
     LOADER_SCRIPT.gsub(/\{\{script\}\}/, self)     # insert into loader script a javascript URL
+  end
+  
+  def to_bookmarklet_page
+    HTML_OUTPUT.gsub(/\{\{bookmarklet\}\}/, self)  # insert bookmarklet into html code for drag-drop bookmarklet onto libkbar
   end
 end
