@@ -19,13 +19,10 @@ where <input> is a file path or an URI to a javascript file.
 [options] are:
 EOS
 
-  opt :output, "output file. If not set, output goes to clipboard (OSX only)", :default => "", :short => "-o"
-  opt :include, "include bookmarklet code on top of input file as a comment", :default => false, :short => "-i"
-#  opt :minimize, "minimize javascript code", :default => false, :short => "-m"
-  opt :jslint, "analyse javascript code via jslint before", :default => false, :short => "-l"
+  opt :file, "write bookmarklet to file. Otherwise output goes to clipboard (OSX only) and STDOUT", :default => false
+  opt :include, "include bookmarklet code on top of input file as a comment", :default => false
+#  opt :jslint, "analyse javascript code via jslint before", :default => false, :short => "-l"
   opt :publish, "build html page for bookmarklet and open it in a browser.", :default => false
-#  opt :warn, "warn if bookmarklet code exceeds allowed maximum bookmark size", :default => true
-#  opt :externalize, "externalize code and host it on github.com as a gist. Bookmarklet will load and execute code. This is useful for long scripts in particular.", :default => false
 end 
 
 Trollop::die "need at least a javascript file-path or a valid URI as input" if ARGV.empty?
@@ -55,7 +52,7 @@ if uri.nil? then
     input.gsub!(/^\/\/ javascript:.+\n\n/, '')
 
     File.open(input, "w") do |f|      
-      f.puts "// #{bookmarklet}\n\n#{input}"
+      f.puts "// #{bookmarklet}\n\n#{local_file}"
     end
   end
    
@@ -80,15 +77,36 @@ else
 end
 
 
+#
+# ===== output ==========
+#
+if opts[:file]
 
-# write bookmarklet code to a file "bookmarklet.js"
-if opts[:output] != ""
-  File.open(opts[:output], "w").write(bookmarklet)
+  # write bookmarklet code to a file "filename.bookmarklet"
+  output = input.gsub(Regexp.new(File.extname(input)), ".bookmarklet") 
+  File.open(output, "w").write(bookmarklet)
+else
+
+  # copy bookmarklet code to clipboard (OSX only)
+  IO.popen('pbcopy', 'w').puts bookmarklet
 end
   
-# copy bookmarklet code to clipboard (OSX only)
-IO.popen('pbcopy', 'w').puts bookmarklet
 
-# stdout
-puts bookmarklet
+# generate and open html page with bookmarklet-link in order to drag'n'drop bookmarklet up to bookmarks-bar 
+if opts[:publish]
+  begin
+    require 'bcat'
+    IO.popen('bcat', 'w').puts bookmarklet.to_bookmarklet_page
+  rescue LoadError => e
+    puts "Error: Publishing requires bcat gem: http://rtomayko.github.com/bcat/"
+    exit 1
+  end
+end
+  
+
+# write to stdout 
+if !opts[:publish] && !opts[:file]
+  puts bookmarklet
+end
+
 
