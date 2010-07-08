@@ -1,4 +1,5 @@
 bin/bm.pl
-test.js
+test*.js
 TODO.markdown
 *.bookmarklet
+pkg

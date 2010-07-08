@@ -5,7 +5,7 @@ require "mustache"
 
 module Marlene  
 
-  VERSION          = "0.1.0"
+  VERSION          = "0.1.1"
   ANCHOR_TEXTNODE  = "bookmarklet"
   PSEUDOCOL        = "javascript:"
   LOADER_SCRIPT    = File.join(File.dirname(__FILE__), 'templates', 'loader.js')
@@ -30,7 +30,7 @@ class String
     js.gsub!(/ +/, ' ')                # replace multiple spaces with a single space
     js.gsub!(/^ *\/\/.+\n/, '')        # remove comment lines starting with a double slash
     js.gsub!(/\n/, '')                 # remove all newlines
-    js = URI.escape(js, ' ')           # URI escape spaces only
+    js = URI.escape(js, %Q(''" ))      # URI escape: single- and double-quotes, spaces
     PSEUDOCOL + js                     # prefix with 'javascript:'
   end
 
