@@ -5,6 +5,7 @@ require "mustache"
 
 module Marlene  
 
+  VERSION          = "0.1.0"
   ANCHOR_TEXTNODE  = "bookmarklet"
   PSEUDOCOL        = "javascript:"
   LOADER_SCRIPT    = File.join(File.dirname(__FILE__), 'templates', 'loader.js')
@@ -13,6 +14,7 @@ module Marlene
   def yui_compressor
     YUI::JavaScriptCompressor.new(:munge => true)
   end
+  
 end
 
 
@@ -53,5 +55,6 @@ class String
     page[:anchor] = ANCHOR_TEXTNODE
     page.render
   end
+  
 end
 
