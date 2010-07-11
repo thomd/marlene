@@ -3,3 +3,4 @@ test*.js
 TODO.markdown
 *.bookmarklet
 pkg
+*.gem
