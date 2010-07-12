@@ -13,8 +13,9 @@ begin
     gemspec.add_dependency "yui-compressor", ">= 0.9.1"
     gemspec.add_dependency "mustache", ">= 0.11.2"
     gemspec.add_dependency "bcat", ">= 0.5.0"
-    gemspec.add_dependency "mustache", ">= 0.11.2"
     gemspec.add_dependency "trollop", ">= 1.16"
+    gemspec.add_development_dependency "rspec", ">= 1.3.0"
+    gemspec.add_development_dependency "jeweler", ">= 1.4.0"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
