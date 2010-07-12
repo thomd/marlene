@@ -21,7 +21,7 @@ EOS
 
   opt :file, "write bookmarklet to file. Otherwise output goes to clipboard (OSX only) and STDOUT", :default => false
   opt :include, "include bookmarklet code on top of input file as a comment", :default => false
-#  opt :jslint, "analyse javascript code via jslint before", :default => false, :short => "-l"
+  # opt :jslint, "analyse javascript code via jslint before", :default => true, :short => "-l"
   opt :publish, "build html page for bookmarklet and open it in a browser.", :default => false
 end 
 
@@ -49,7 +49,7 @@ if uri.nil? then
   if opts[:include]
   
     # remove first line if there's already a bookmarklet comment and 
-    input.gsub!(/^\/\/ javascript:.+\n\n/, '')
+    local_file.gsub!(/^\/\/ javascript:.+\n\n/, '')
 
     File.open(input, "w") do |f|      
       f.puts "// #{bookmarklet}\n\n#{local_file}"
